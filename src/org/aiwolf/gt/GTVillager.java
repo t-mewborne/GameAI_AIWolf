@@ -5,24 +5,13 @@ import org.aiwolf.common.data.Player;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
-public class GTVillager implements Player {
+public class GTVillager extends GTBasePlayer {
 
-	@Override
-	public Agent attack() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void dayStart() {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public Agent divine() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -37,11 +26,6 @@ public class GTVillager implements Player {
 		return null;
 	}
 
-	@Override
-	public Agent guard() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void initialize(GameInfo arg0, GameSetting arg1) {
@@ -69,8 +53,22 @@ public class GTVillager implements Player {
 
 	@Override
 	public String whisper() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Agent guard() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Agent divine() {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Agent attack() {
+		throw new UnsupportedOperationException();
 	}
 
 }
