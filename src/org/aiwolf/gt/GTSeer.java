@@ -17,13 +17,14 @@ public class GTSeer extends GTBasePlayer {
 	
 	int comingoutDay;
 	boolean isCameout;
-	Deque<Judge> divinationQueue = new LinkedList<>();
+	static Deque<Judge> divinationQueue = new LinkedList<>();
 	Map<Agent, Species> myDivinationMap = new HashMap<>();
 	List<Agent> whiteList = new ArrayList<>();		// divined to be human (could be possessed tho)
 	List<Agent> blackList = new ArrayList<>();		// divined to be wolf
 	List<Agent> grayList;							// don't know species, not suspicious
 	List<Agent> susWolves = new ArrayList<>();		// suspicious, but not divined
 	List<Agent> possessedList = new ArrayList<>();	// think are possessed
+	static Agent voteCandidate;
 	
 	
 	@Override

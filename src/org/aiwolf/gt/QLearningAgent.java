@@ -1,25 +1,52 @@
 package org.aiwolf.gt;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+
+import org.aiwolf.client.lib.Content;
+import org.aiwolf.client.lib.DivinedResultContentBuilder;
+import org.aiwolf.client.lib.EstimateContentBuilder;
+import org.aiwolf.common.data.Judge;
+import org.aiwolf.common.data.Role;
+import org.aiwolf.common.data.Species;
+import org.aiwolf.common.data.Talk;
 
 public class QLearningAgent {
 	double[][] learningMatrix;
-	int[][] pathMatrix;
+	List<State> stateList = new ArrayList<>();
+	List<String> talkList = new ArrayList<>();
 	double discount;
 	Random rand = new Random();
 	int goalState;
 
-	public QLearningAgent(int[][] pathMatrix, double discount, int goalState) {
-		this.pathMatrix = pathMatrix;
-		this.learningMatrix = new double[pathMatrix.length][pathMatrix.length];
+	public QLearningAgent(double discount, int goalState) {
+		//this.stateList = //TODO
+		buildMatrix();
+		
+		
+		//this.actionList = //TODO
+		this.learningMatrix = new double[stateList.size()][talkList.size()];
 		this.discount = discount;
 		this.goalState = goalState;
+	}
+	
+	private void buildMatrix() {
+		stateList.add(new State(Species.HUMAN, false));
+		stateList.add(new State(Species.HUMAN, true));
+		stateList.add(new State(Species.WEREWOLF, false));
+		stateList.add(new State(Species.WEREWOLF, true));
+		
+		Judge ident = GTSeer.divinationQueue.poll();
+		
+		talkList.add(Talk.SKIP);
+		talkList.add((new Content(new DivinedResultContentBuilder(ident.getTarget(), ident.getResult()))).getText());
+		talkList.add((new Content(new EstimateContentBuilder(GTSeer.voteCandidate,Role.WEREWOLF))).getText());
 	}
 
 	public void playEpisode(State state) {
 		//int state = rand.nextInt(learningMatrix.length);
-		//while (state != goalState) {
+		//while (state = goalState) {
 			//int action = rand.nextInt(learningMatrix.length);
 			int action = possibleAction(state);
 			double maxQ = -1;
@@ -59,11 +86,14 @@ public class QLearningAgent {
 	}
 
 }
+
 class State {
+	Species divination;
+	Boolean suspect; 		//True if susWolves is not empty (announce/vote)
+	
+	public State(Species divination, Boolean suspect) {
+		this.divination = divination;
+		this.suspect = suspect;
+	}
 	
 }
-
-class Action{
-	
-}
-
