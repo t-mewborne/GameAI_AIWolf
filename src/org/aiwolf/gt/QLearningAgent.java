@@ -17,9 +17,9 @@ public class QLearningAgent {
 		this.goalState = goalState;
 	}
 
-	public void playEpisode() {
-		int state = rand.nextInt(learningMatrix.length);
-		while (state != goalState) {
+	public void playEpisode(State state) {
+		//int state = rand.nextInt(learningMatrix.length);
+		//while (state != goalState) {
 			//int action = rand.nextInt(learningMatrix.length);
 			int action = possibleAction(state);
 			double maxQ = -1;
@@ -27,10 +27,10 @@ public class QLearningAgent {
 			
 			learningMatrix[state][action] = pathMatrix[state][action] + discount * maxQ;
 			state = action;
-		}
+		//}
 	}
 	
-	private Integer possibleAction(int state) {
+	private Integer possibleAction(State state) {
 		ArrayList<Integer> actions = new ArrayList<>();
 		
 		for (int i = 1; i < pathMatrix[state].length; i++) {
@@ -59,3 +59,11 @@ public class QLearningAgent {
 	}
 
 }
+class State {
+	
+}
+
+class Action{
+	
+}
+

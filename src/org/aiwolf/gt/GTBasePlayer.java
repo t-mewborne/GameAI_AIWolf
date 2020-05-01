@@ -29,7 +29,7 @@ public class GTBasePlayer implements Player {
 	List<Agent> attackedAgents = new ArrayList<>(); // agents killed by wolves
 	List<Judge> divinationList = new ArrayList<>(); // 
 	List<Judge> identList = new ArrayList<>();
-	Deque<Content> talkQueue = new LinkedList<>();
+	Deque<Content> talkQueue = new LinkedList<>();	// messages to say
 	Deque<Content> whisperQueue = new LinkedList<>();
 	Agent voteCandidate;
 	Agent declaredVoteCandidate;
@@ -40,9 +40,16 @@ public class GTBasePlayer implements Player {
 	List<Agent> humans = new ArrayList<>();
 	List<Agent> werewolves = new ArrayList<>();
 
+	protected <T> T randomSelect(List<T> list) {
+		if (list.isEmpty()) {
+			return null;
+		} else {
+			return list.get((int) (Math.random() * list.size()));
+		}
+	}
+	
 	public void dayStart() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void update(GameInfo arg0) {
@@ -56,38 +63,35 @@ public class GTBasePlayer implements Player {
 		
 	}
 
-	@Override
+
 	public String getName() {
 		return "GTBasePlayer";
 	}
 
 
 
-	@Override
+
 	public void initialize(GameInfo arg0, GameSetting arg1) {
 		// TODO Auto-generated method stub
-		
 	}
 
-	@Override
+
 	public String talk() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
-
-	@Override
 	public Agent vote() {
 		return null;
 	}
 
-	@Override
+
 	public String whisper() {
 		return Talk.SKIP;
 	}
 	
-	@Override
+
 	public Agent attack() {
 		return null;
 	}
@@ -96,7 +100,7 @@ public class GTBasePlayer implements Player {
 		return null;
 	}
 	
-	@Override
+
 	public Agent guard() {
 		return null;
 	}
