@@ -1,30 +1,56 @@
 package org.aiwolf.gt;
 
-import org.aiwolf.client.lib.*;
-import org.aiwolf.common.data.*;
-import org.aiwolf.common.net.*;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.aiwolf.client.lib.Content;
+import org.aiwolf.common.data.Agent;
+import org.aiwolf.common.data.Judge;
+import org.aiwolf.common.data.Player;
+import org.aiwolf.common.data.Role;
+import org.aiwolf.common.data.Talk;
+import org.aiwolf.common.net.GameInfo;
+import org.aiwolf.common.net.GameSetting;
 
 public class GTBasePlayer implements Player {
 
-	@Override
-	public Agent attack() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
+	Agent me;
+	int day;
+	boolean canTalk;
+	boolean canWhisper;
+	GameInfo currentGameInfo;
+	List<Agent> livingAgents;
+	List<Agent> executedAgents = new ArrayList<>();	// agents voted to be executed
+	List<Agent> attackedAgents = new ArrayList<>(); // agents killed by wolves
+	List<Judge> divinationList = new ArrayList<>(); // 
+	List<Judge> identList = new ArrayList<>();
+	Deque<Content> talkQueue = new LinkedList<>();
+	Deque<Content> whisperQueue = new LinkedList<>();
+	Agent voteCandidate;
+	Agent declaredVoteCandidate;
+	Agent attackVoteCandidate;
+	Agent declaredAttackVoteCandidate;
+	Map<Agent, Role> comingoutMap = new HashMap<>();
+	int talkListHead;
+	List<Agent> humans = new ArrayList<>();
+	List<Agent> werewolves = new ArrayList<>();
+
 	public void dayStart() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public Agent divine() {
+	public void update(GameInfo arg0) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
+	
 
-	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
 		
@@ -32,15 +58,10 @@ public class GTBasePlayer implements Player {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "GTBasePlayer";
 	}
 
-	@Override
-	public Agent guard() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public void initialize(GameInfo arg0, GameSetting arg1) {
@@ -54,21 +75,29 @@ public class GTBasePlayer implements Player {
 		return null;
 	}
 
-	@Override
-	public void update(GameInfo arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	@Override
 	public Agent vote() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String whisper() {
-		// TODO Auto-generated method stub
+		return Talk.SKIP;
+	}
+	
+	@Override
+	public Agent attack() {
+		return null;
+	}
+	
+	public Agent divine() {
+		return null;
+	}
+	
+	@Override
+	public Agent guard() {
 		return null;
 	}
 
