@@ -44,12 +44,16 @@ public class QLearningAgent {
 		//stateList.add(new State(Species.WEREWOLF, false));
 		stateList.add(new GTState(Species.WEREWOLF, true));
 
-		Judge ident = GTSeer.divinationQueue.poll();
+		//Judge ident = GTSeer.divinationQueue.poll();
+		Judge ident = GTSeer.divination;
+		
+//		talkList.add(Talk.SKIP);
+//		talkList.add((new Content(new DivinedResultContentBuilder(ident.getTarget(), ident.getResult()))).getText());
+//		talkList.add((new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText());
 
 		talkList.add(Talk.SKIP);
-		talkList.add((new Content(new DivinedResultContentBuilder(ident.getTarget(), ident.getResult()))).getText());
-		talkList.add((new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText());
-
+		talkList.add("Divine");
+		talkList.add("Estimate");
 //		for (int i = 0; i < stateList.size(); i++) {
 //			for (int j = 0; j < talkList.size(); j++) {
 //				learningMatrix[i][j] = 0.0;

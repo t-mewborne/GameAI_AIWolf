@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.aiwolf.client.lib.Content;
+import org.aiwolf.client.lib.DivinedResultContentBuilder;
+import org.aiwolf.client.lib.EstimateContentBuilder;
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Judge;
 import org.aiwolf.common.data.Role;
@@ -20,7 +23,7 @@ public class GTSeer extends GTBasePlayer {
 	int comingoutDay;
 	boolean isCameout;
 	static Deque<Judge> divinationQueue = new LinkedList<>();
-	Judge divination;
+	static Judge divination;
 	Map<Agent, Species> myDivinationMap = new HashMap<>();
 	List<Agent> whiteList = new ArrayList<>(); // divined to be human (could be possessed tho)
 	List<Agent> blackList = new ArrayList<>(); // divined to be wolf
@@ -96,21 +99,37 @@ public class GTSeer extends GTBasePlayer {
 	@Override
 	public String talk() {
 		if (talkedToday) {
-			return Talk.SKIP;
+			return Talk.OVER;
 		} else {
 			chooseVote();
 			divination = currentGameInfo.getDivineResult();
 			GTState state = new GTState(divination.getResult(), !susWolves.isEmpty());
 			// LearningAgent.playEpisode(state);
 			action = qLearn.playAndGetAction(state);
+			String say;
+			switch (action) {
+			case Talk.SKIP:
+				say = Talk.OVER;
+				break;
+			case "Divine":
+				say = (new Content(new DivinedResultContentBuilder(divination.getTarget(), divination.getResult()))).getText();
+				break;
+			case "Estimate":
+				say = (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
+				break;
+			default:
+				say = Talk.SKIP;
+				break;
+			}
+			
 			talkedToday = true;
-			return action;
+			return say;
 		}
 	}
 
 	public void chooseVote() {
 		List<Agent> aliveWolves = new ArrayList<>();
-		
+
 		for (Agent a : livingAgents) {
 			if (comingoutMap.get(a) == Role.SEER) {
 				if (a != me) {
@@ -118,13 +137,13 @@ public class GTSeer extends GTBasePlayer {
 				}
 			}
 		}
-		
+
 		for (Agent a : blackList) {
 			if (isAlive(a)) {
 				aliveWolves.add(a);
 			}
 		}
-		if (divination.getResult()==Species.WEREWOLF) {
+		if (divination.getResult() == Species.WEREWOLF) {
 			voteCandidate = divination.getTarget();
 			susVote = false;
 		} else if (!susWolves.isEmpty()) {
