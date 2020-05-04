@@ -9,25 +9,32 @@ import java.util.Map;
 
 import org.aiwolf.common.data.Agent;
 import org.aiwolf.common.data.Judge;
+import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
+import org.aiwolf.common.data.Talk;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 
 public class GTSeer extends GTBasePlayer {
-	
+
 	int comingoutDay;
 	boolean isCameout;
 	static Deque<Judge> divinationQueue = new LinkedList<>();
+	Judge divination;
 	Map<Agent, Species> myDivinationMap = new HashMap<>();
-	List<Agent> whiteList = new ArrayList<>();		// divined to be human (could be possessed tho)
-	List<Agent> blackList = new ArrayList<>();		// divined to be wolf
-	List<Agent> grayList;							// don't know species, not suspicious
-	List<Agent> susWolves = new ArrayList<>();		// suspicious, but not divined
-	List<Agent> possessedList = new ArrayList<>();	// think are possessed
+	List<Agent> whiteList = new ArrayList<>(); // divined to be human (could be possessed tho)
+	List<Agent> blackList = new ArrayList<>(); // divined to be wolf
+	List<Agent> grayList; // don't know species, not suspicious
+	List<Agent> susWolves = new ArrayList<>(); // suspicious, but not divined
+	List<Agent> possessedList = new ArrayList<>(); // think are possessed
 	static Agent voteCandidate;
-	
-	
-	@Override
+	static QLearningAgent qLearn = new QLearningAgent(0.1, 50); // discount=0.1, randFactor=50
+	boolean susVote = false;
+	boolean talkedToday = false;
+
+	static GTState state;
+	static String action;
+
 	public void initialize(GameInfo gameInfo, GameSetting gameSetting) {
 		super.initialize(gameInfo, gameSetting);
 		comingoutDay = (int) (Math.random() * 3 + 1);
@@ -40,19 +47,20 @@ public class GTSeer extends GTBasePlayer {
 		susWolves.clear();
 		possessedList.clear();
 	}
-	@Override
+
 	public void dayStart() {
 		super.dayStart();
-		Judge divination = currentGameInfo.getDivineResult();	// who we divined night before
+		talkedToday = false;
+		divination = currentGameInfo.getDivineResult(); // who we divined night before
 		if (divination != null) {
 			divinationQueue.offer(divination);
 			grayList.remove(divination.getTarget());
-			if (divination.getResult() == Species.HUMAN) {		// add human divination to white list
+			if (divination.getResult() == Species.HUMAN) { // add human divination to white list
 				whiteList.add(divination.getTarget());
 			} else {
-				blackList.add(divination.getTarget());			// add wolf divination to blacklist
+				blackList.add(divination.getTarget()); // add wolf divination to blacklist
 				if (susWolves.contains(divination.getTarget())) {
-					susWolves.remove(divination.getTarget());	// remove from sus list if divined wolf
+					susWolves.remove(divination.getTarget()); // remove from sus list if divined wolf
 				}
 			}
 			myDivinationMap.put(divination.getTarget(), divination.getResult()); // put in agent -> species map
@@ -61,17 +69,74 @@ public class GTSeer extends GTBasePlayer {
 
 	@Override
 	public Agent divine() {
+		getReward();
 		if (!susWolves.isEmpty())
 			return randomSelect(susWolves);
-		else 
+		else
 			return randomSelect(grayList);
 	}
 
+	public void getReward() {
+		int reward = 0;
+		Agent lastExecuted = executedAgents.get(executedAgents.size() - 1);
+		Agent divTarget = divination.getTarget();
+		Species divType = divination.getResult();
+		if ((divType == Species.WEREWOLF && divTarget == lastExecuted)
+				|| (divType == Species.HUMAN && divTarget != lastExecuted)
+				|| (susVote && voteCandidate == lastExecuted)) {
+			reward = 1;
+		} else if ((divType == Species.WEREWOLF && divTarget != lastExecuted)
+				|| (divType == Species.HUMAN && divTarget == lastExecuted)
+				|| (susVote && voteCandidate != lastExecuted)) {
+			reward = -1;
+		}
+		qLearn.updateQTable(state, action, reward); // state, action, reward
+	}
 
 	@Override
 	public String talk() {
-		// TODO Auto-generated method stub
-		return null;
+		if (talkedToday) {
+			return Talk.SKIP;
+		} else {
+			chooseVote();
+			divination = currentGameInfo.getDivineResult();
+			GTState state = new GTState(divination.getResult(), !susWolves.isEmpty());
+			// LearningAgent.playEpisode(state);
+			action = qLearn.playAndGetAction(state);
+			talkedToday = true;
+			return action;
+		}
+	}
+
+	public void chooseVote() {
+		List<Agent> aliveWolves = new ArrayList<>();
+		
+		for (Agent a : livingAgents) {
+			if (comingoutMap.get(a) == Role.SEER) {
+				if (a != me) {
+					susWolves.add(a);
+				}
+			}
+		}
+		
+		for (Agent a : blackList) {
+			if (isAlive(a)) {
+				aliveWolves.add(a);
+			}
+		}
+		if (divination.getResult()==Species.WEREWOLF) {
+			voteCandidate = divination.getTarget();
+			susVote = false;
+		} else if (!susWolves.isEmpty()) {
+			voteCandidate = randomSelect(susWolves);
+			susVote = true;
+		} else if (!aliveWolves.isEmpty()) {
+			voteCandidate = randomSelect(aliveWolves);
+			susVote = false;
+		} else {
+			voteCandidate = randomSelect(grayList);
+			susVote = false;
+		}
 	}
 
 	@Override
@@ -82,15 +147,12 @@ public class GTSeer extends GTBasePlayer {
 
 	@Override
 	public Agent vote() {
-		// TODO Auto-generated method stub
-		return null;
+		return voteCandidate;
 	}
 
-	
 	@Override
 	public String getName() {
 		return "GTSeer";
 	}
-	
 
 }
