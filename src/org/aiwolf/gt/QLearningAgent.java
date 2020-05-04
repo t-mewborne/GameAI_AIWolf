@@ -45,7 +45,7 @@ public class QLearningAgent {
 		stateList.add(new GTState(Species.WEREWOLF, true));
 
 		//Judge ident = GTSeer.divinationQueue.poll();
-		Judge ident = GTSeer.divination;
+		//Judge ident = GTSeer.divination;
 		
 //		talkList.add(Talk.SKIP);
 //		talkList.add((new Content(new DivinedResultContentBuilder(ident.getTarget(), ident.getResult()))).getText());

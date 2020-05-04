@@ -70,13 +70,15 @@ public class GTSeer extends GTBasePlayer {
 		}
 	}
 
-	@Override
+
 	public Agent divine() {
+		System.out.println("divining shit");
 		getReward();
 		if (!susWolves.isEmpty())
 			return randomSelect(susWolves);
 		else
 			return randomSelect(grayList);
+
 	}
 
 	public void getReward() {
