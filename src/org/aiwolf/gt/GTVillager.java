@@ -1,7 +1,7 @@
 package org.aiwolf.gt;
 
 import org.aiwolf.common.data.Agent;
-import org.aiwolf.common.data.Player;
+//import org.aiwolf.common.data.Player;
 import org.aiwolf.common.net.GameInfo;
 import org.aiwolf.common.net.GameSetting;
 

@@ -70,15 +70,15 @@ public class GTSeer extends GTBasePlayer {
 		}
 	}
 
-
+	@Override
 	public Agent divine() {
-		System.out.println("divining shit");
 		getReward();
 		if (!susWolves.isEmpty())
 			return randomSelect(susWolves);
-		else
+		else if (!grayList.isEmpty())
 			return randomSelect(grayList);
-
+		else
+			return randomSelect(livingAgents);
 	}
 
 	public void getReward() {
@@ -98,8 +98,7 @@ public class GTSeer extends GTBasePlayer {
 		qLearn.updateQTable(state, action, reward); // state, action, reward
 	}
 
-	@Override
-	public String talk() {
+	protected String chooseTalk() {
 		if (talkedToday) {
 			return Talk.OVER;
 		} else {
@@ -111,7 +110,7 @@ public class GTSeer extends GTBasePlayer {
 			String say;
 			switch (action) {
 			case Talk.SKIP:
-				say = Talk.OVER;
+				say = Talk.SKIP;
 				break;
 			case "Divine":
 				say = (new Content(new DivinedResultContentBuilder(divination.getTarget(), divination.getResult()))).getText();
@@ -132,6 +131,8 @@ public class GTSeer extends GTBasePlayer {
 	public void chooseVote() {
 		List<Agent> aliveWolves = new ArrayList<>();
 
+		System.out.println("voting***********");
+		
 		for (Agent a : livingAgents) {
 			if (comingoutMap.get(a) == Role.SEER) {
 				if (a != me) {

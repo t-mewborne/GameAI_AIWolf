@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.aiwolf.client.lib.Content;
-import org.aiwolf.client.lib.DivinedResultContentBuilder;
-import org.aiwolf.client.lib.EstimateContentBuilder;
-import org.aiwolf.common.data.Judge;
-import org.aiwolf.common.data.Role;
+//import org.aiwolf.client.lib.Content;
+//import org.aiwolf.client.lib.DivinedResultContentBuilder;
+//import org.aiwolf.client.lib.EstimateContentBuilder;
+//import org.aiwolf.common.data.Judge;
+//import org.aiwolf.common.data.Role;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
 
@@ -20,33 +20,32 @@ import org.aiwolf.common.data.Talk;
 //import game.Point;
 
 public class QLearningAgent {
-	static double[][] learningMatrix;
+	public double[][] learningMatrix;
 	List<GTState> stateList = new ArrayList<>();// states
-	List<String> talkList = new ArrayList<>(); 	// actions
+	List<String> talkList = new ArrayList<>(); // actions
 	double discount;
 	Random rand = new Random();
-	int randFactor; 							//level of randomness in selecting action (0-100)
-	//int goalState;
+	int randFactor; // level of randomness in selecting action (0-100)
+	// int goalState;
 
 	public QLearningAgent(double discount, int randFactor) {
 		// this.stateList = //TODO
 		buildMatrix();
 
-
 		this.discount = discount;
-		this.randFactor = randFactor;			//level of randomness in selecting action (0-100)
-		//this.goalState = goalState;
+		this.randFactor = randFactor; // level of randomness in selecting action (0-100)
+		// this.goalState = goalState;
 	}
 
 	private void buildMatrix() {
 		stateList.add(new GTState(Species.HUMAN, false));
 		stateList.add(new GTState(Species.HUMAN, true));
-		//stateList.add(new State(Species.WEREWOLF, false));
+		// stateList.add(new State(Species.WEREWOLF, false));
 		stateList.add(new GTState(Species.WEREWOLF, true));
 
-		//Judge ident = GTSeer.divinationQueue.poll();
-		//Judge ident = GTSeer.divination;
-		
+		// Judge ident = GTSeer.divinationQueue.poll();
+		// Judge ident = GTSeer.divination;
+
 //		talkList.add(Talk.SKIP);
 //		talkList.add((new Content(new DivinedResultContentBuilder(ident.getTarget(), ident.getResult()))).getText());
 //		talkList.add((new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText());
@@ -64,7 +63,7 @@ public class QLearningAgent {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 //	public void playEpisode(GTState state) {
@@ -85,7 +84,7 @@ public class QLearningAgent {
 	public void updateQTable(GTState state, String action, int reward) {
 		learningMatrix[stateList.indexOf(state)][talkList.indexOf(action)] += reward;
 	}
-	
+
 	public String playAndGetAction(GTState state) {
 		int stateIndex = stateList.indexOf(state);
 		Integer randActionIndex = possibleAction(stateIndex); // random possible action
@@ -96,20 +95,21 @@ public class QLearningAgent {
 			actionIndex++;
 			if (q > maxQ)
 				maxQ = q;
-				maxQAction = actionIndex;
+			maxQAction = actionIndex;
 		}
-		learningMatrix[stateIndex][actionIndex] = learningMatrix[stateIndex][actionIndex] + discount * maxQ; //update
+		learningMatrix[stateIndex][actionIndex] = learningMatrix[stateIndex][actionIndex] + discount * maxQ; // update
+
 		if (rand.nextInt(100) < randFactor)
 			return talkList.get(randActionIndex);
 		else
 			return talkList.get(maxQAction);
 	}
-	
+
 	private Integer possibleAction(int stateIndex) {
 		ArrayList<Integer> actions = new ArrayList<>();
-		for (int i = 1; i < learningMatrix[stateIndex].length; i++) {
+		for (int i = 0; i < learningMatrix[stateIndex].length; i++) {
 			if (learningMatrix[stateIndex][i] != -1)
-				actions.add(i);  // i is the index of the action in talkList
+				actions.add(i); // i is the index of the action in talkList
 		}
 
 		return actions.get(rand.nextInt(actions.size()));
@@ -132,13 +132,13 @@ public class QLearningAgent {
 //		}
 //		System.out.println("Arrived!");
 //	}
-	
-	private ArrayList<ArrayList<Double>> tempGrid = new ArrayList<ArrayList<Double>>();
-	
+
+	private static ArrayList<ArrayList<Double>> tempGrid = new ArrayList<ArrayList<Double>>();
+
 	private void loadMazeFile() throws IOException {
-		File file = new File("qTable.txt"); 
-		BufferedReader br = new BufferedReader(new FileReader(file)); 
-		  
+		File file = new File("qTable.txt");
+		BufferedReader br = new BufferedReader(new FileReader(file));
+
 		String st;
 		while ((st = br.readLine()) != null) {
 			ArrayList<Double> tempLine = new ArrayList<Double>();
@@ -146,20 +146,23 @@ public class QLearningAgent {
 			for (String t : line) {
 				tempLine.add(Double.parseDouble(t));
 			}
-			tempGrid.add(tempLine); 
-		} 
+			tempGrid.add(tempLine);
+		}
 		br.close();
-		
+
 		ArrayList<Double> firstLine = tempGrid.get(0);
 		int width = firstLine.size();
 		int height = tempGrid.size();
-		//learningMatrix = new Double[width][height];
+		learningMatrix = new double[width][height];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				Double value = tempGrid.get(y).get(x);
 				learningMatrix[x][y] = value;
-				//if (value == 2) g.goal = new Point(x,y);
+				// if (value == 2) g.goal = new Point(x,y);
 			}
+		}
+		for (String i : talkList) {
+			System.out.println(i);
 		}
 	}
 

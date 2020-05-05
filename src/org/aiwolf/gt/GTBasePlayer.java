@@ -62,9 +62,9 @@ public class GTBasePlayer implements Player {
 		declaredAttackVoteCandidate = null;
 		attackVoteCandidate = null;
 		talkListHead = 0;
-		// 前日に追放されたエージェントを登録
+
 		addExecutedAgent(currentGameInfo.getExecutedAgent());
-		// 昨夜死亡した（襲撃された）エージェントを登録
+
 		if (!currentGameInfo.getLastDeadAgentList().isEmpty()) {
 			addKilledAgent(currentGameInfo.getLastDeadAgentList().get(0));
 		}
@@ -159,8 +159,11 @@ public class GTBasePlayer implements Player {
 		return currentGameInfo.getStatusMap().get(agent) == Status.ALIVE;
 	}
 	
+	protected String chooseTalk() {
+		return null;
+	}
 	public String talk() {
-		return null; // if queue is empty, skip
+		return chooseTalk();
 	}
 
 
