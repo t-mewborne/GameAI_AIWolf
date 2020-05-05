@@ -7,7 +7,7 @@
 			<attribute name="javadoc_location" value="jar:file:/Users/travis/eclipse/gameAi3395Workspace/ai-wolf-GT/lib/aiwolf-docs-ver0.5.1.zip!/docs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/aiwolf-common.jar">
+	<classpathentry kind="lib" path="lib/aiwolf-common.jar" sourcepath="lib/aiwolf-common.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/travis/eclipse/gameAi3395Workspace/ai-wolf-GT/lib/aiwolf-docs-ver0.5.1.zip!/docs"/>
 		</attributes>
