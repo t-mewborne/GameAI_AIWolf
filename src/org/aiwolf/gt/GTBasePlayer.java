@@ -122,7 +122,8 @@ public class GTBasePlayer implements Player {
 	
 
 	public void finish() {
-		// TODO Auto-generated method stub
+		System.out.println("*********** TEST PRINT *************");
+		
 		if (livingAgents.contains(me)) {
 			GTSeer.qLearn.updateQTable(GTSeer.state, GTSeer.action, 2);
 		} else if (executedAgents.contains(me))
@@ -182,6 +183,7 @@ public class GTBasePlayer implements Player {
 	}
 	
 	public Agent divine() {
+		System.out.println("divining shit in Base******************");
 		return null;
 	}
 	
