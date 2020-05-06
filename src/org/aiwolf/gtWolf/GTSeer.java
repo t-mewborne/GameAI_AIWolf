@@ -160,30 +160,41 @@ public class GTSeer extends GTBasePlayer {
 			else
 				state = new GTState(divination.getResult(), !susWolves.isEmpty(), true, isCameout, earlyDays);
 			action = qLearn.playAndGetAction(state, gamenum);
-			String say;
-			switch (action) {
-			case Talk.SKIP:
-				say = Talk.SKIP;
-				break;
-			case "Divine":
-				if (divination == null)
-					say = (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
-				else
-					say = (new Content(new DivinedResultContentBuilder(divination.getTarget(), divination.getResult())))
-							.getText();
-				break;
-			case "Estimate":
-				say = (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
-				break;
-			case "ComeOut":
-				say = (new Content(new ComingoutContentBuilder(me, Role.SEER))).getText();
-			default:
-				say = Talk.SKIP;
-				break;
-			}
+			//String say;
+			
 			talkedToday = true;
-			return say;
+			if (action == Talk.SKIP) return Talk.SKIP;
+			else if (action == "Divine" && divination == null) return (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
+			else if (action == "Divine" && divination != null) return (new Content(new DivinedResultContentBuilder(divination.getTarget(), divination.getResult())))
+					.getText();
+			else if (action == "Estimate") return (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
+			else if (action == "ComeOut") return (new Content(new ComingoutContentBuilder(me, Role.SEER))).getText();
+			else return Talk.SKIP;
 		}
+
+//			switch (action) {
+//			case Talk.SKIP:
+//				say = Talk.SKIP;
+//				break;
+//			case "Divine":
+//				if (divination == null)
+//					say = (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
+//				else
+//					say = (new Content(new DivinedResultContentBuilder(divination.getTarget(), divination.getResult())))
+//							.getText();
+//				break;
+//			case "Estimate":
+//				say = (new Content(new EstimateContentBuilder(GTSeer.voteCandidate, Role.WEREWOLF))).getText();
+//				break;
+//			case "ComeOut":
+//				say = (new Content(new ComingoutContentBuilder(me, Role.SEER))).getText();
+//			default:
+//				say = Talk.SKIP;
+//				break;
+//			}
+//			talkedToday = true;
+//			return say;
+//		}
 	}
 
 	public Agent divine() {
