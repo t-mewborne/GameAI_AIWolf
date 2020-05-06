@@ -3,7 +3,9 @@ package org.aiwolf.gtWolf;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,9 +18,6 @@ import java.util.Random;
 import org.aiwolf.common.data.Species;
 import org.aiwolf.common.data.Talk;
 
-//import game.Game;
-//import game.Point;
-
 public class QLearningAgent {
 	public double[][] learningMatrix;
 	List<GTState> stateList = new ArrayList<>();// states
@@ -26,16 +25,11 @@ public class QLearningAgent {
 	double discount;
 	Random rand = new Random();
 	int randFactor = 60; // level of randomness in selecting action (0-100)
-	// int goalState;
 
-	public QLearningAgent(double discount) {// , int randFactor) {
-		// this.stateList = //TODO
+	public QLearningAgent(double discount) {
 		buildMatrix();
 
 		this.discount = discount;
-		// this.randFactor = randFactor; // level of randomness in selecting action
-		// (0-100)
-		// this.goalState = goalState;
 	}
 
 	private void buildMatrix() {
@@ -76,21 +70,6 @@ public class QLearningAgent {
 
 	}
 
-//	public void playEpisode(GTState state) {
-//		// int state = rand.nextInt(learningMatrix.length);
-//		// while (state = goalState) {
-//		// int action = rand.nextInt(learningMatrix.length);
-//		Integer action = possibleAction(state);
-//		double maxQ = -1;
-//		for (double q : learningMatrix[action])
-//			if (q > maxQ)
-//				maxQ = q;
-//
-//		learningMatrix[state][action] = pathMatrix[state][action] + discount * maxQ; //update
-//		state = action;
-//		// }
-//	}
-
 	public void updateQTable(GTState state, String action, int reward) {
 		System.out.println(
 				state.divination + " " + state.suspect + " " + state.divined + " " + state.cameOut + " - state");
@@ -99,17 +78,17 @@ public class QLearningAgent {
 		System.out.println(talkList.indexOf(action) + " - action index");
 		System.out.println(reward + " = reward");
 		learningMatrix[stateList.indexOf(state)][talkList.indexOf(action)] += reward;
+		try {
+			updateMazeFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String playAndGetAction(GTState state, int gameNum) {
 		if (gameNum > 8)
 			randFactor = 10;
 		int stateIndex = stateList.indexOf(state);
-//		ArrayList<Integer> possibleActions = new ArrayList<>();
-//		for (int i = 0; i < talkList.size(); i++) {
-//			if (learningMatrix[stateIndex][i] != -1000.0)
-//				possibleActions.add(i); // i is the index of the action in talkList
-//		}
 		Integer randActionIndex = possibleAction(stateIndex); // random possible action
 		double maxQ = -1;
 		int maxQAction = 0;
@@ -139,28 +118,10 @@ public class QLearningAgent {
 		return actions.get(rand.nextInt(actions.size()));
 	}
 
-//	public void test(int initialState) {
-//		int state = initialState;
-//		while (state != goalState) {
-//			int action = 0;
-//			double maxQ = -1;
-//			for (int i = 0; i < learningMatrix.length; i++) {
-//				if (learningMatrix[state][i] > maxQ) {
-//					maxQ = learningMatrix[state][i];
-//					action = i;
-//				}
-//			}
-//
-//			System.out.println("Went from " + state + " to " + action);
-//			state = action;
-//		}
-//		System.out.println("Arrived!");
-//	}
-
 	private static ArrayList<ArrayList<Double>> tempGrid = new ArrayList<ArrayList<Double>>();
 
 	private void loadMazeFile() throws IOException {
-		File file = new File("qTable.txt");
+		File file = new File("qTable2.txt");
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		String st;
@@ -189,14 +150,24 @@ public class QLearningAgent {
 			System.out.println(i);
 		}
 	}
+	
+	private void updateMazeFile() throws IOException {
+		PrintWriter pw = null;
+		File file = new File("qTable2.txt");
+		if (!file.exists()) file.createNewFile();
+		FileWriter fw = new FileWriter(file, false);
+		pw = new PrintWriter(fw);
+		//pw.print(x);
+
+		for (int i = 0; i < talkList.size(); i++) {
+			for (int j = 0; j < stateList.size(); j++) {
+				pw.print(learningMatrix[j][i]);
+				if (j < stateList.size() - 1) pw.print(",");
+			}
+			pw.println();
+		}
+
+		pw.close();
+	}
 
 }
-
-//class State {
-//	Species divination;	// what they divined someone to be
-//	Boolean suspect; 	// True if susWolves is not empty (you have something to announce) (announce/vote)
-//
-//	public State(Species divination, Boolean suspect) {
-//		this.divination = divination;
-//		this.suspect = suspect;
-//	}
