@@ -13,9 +13,8 @@ import org.aiwolf.common.net.*;
 import org.aiwolf.gtWolf.GTState;
 import org.aiwolf.gtWolf.QLearningAgent;
 
-/**
- * �?�?師役エージェントクラス
- */
+// Seer class for when assigned to seer
+
 public class GTSeer extends GTBasePlayer {
 	int comingoutDay;
 	boolean isCameout;
@@ -58,6 +57,8 @@ public class GTSeer extends GTBasePlayer {
 		doCO = false;
 		houkoku = true;
 
+		
+		
 		whiteList.clear();
 		blackList.clear();
 		grayList = new ArrayList<>();
@@ -113,13 +114,9 @@ public class GTSeer extends GTBasePlayer {
 	protected Agent chooseVote() {
 
 		gamedata.add(new GameData(DataType.VOTESTART, day, meint, meint, false));
-
 		sh.process(params, gamedata);
 
-//		int c = chooseMostLikelyWerewolf();
-//
-//		return currentGameInfo.getAgentList().get(c);
-		chooseVoteCandidate();
+		chooseVoteCandidate(); // decide who to vote for
 		return voteCandidate;
 	}
 
@@ -143,17 +140,12 @@ public class GTSeer extends GTBasePlayer {
 
 	protected String chooseTalk() {
 		gamedata.add(new GameData(DataType.TURNSTART, day, meint, meint, false));
-
 		sh.process(params, gamedata);
-
 		updateState(sh);
-
 		if (update_sh) {
-//			System.out.println("SEARCH");
 			update_sh = false;
 			sh.serach(1000);
 		}
-
 		double mn = -1;
 		int c = 0;
 
@@ -167,7 +159,6 @@ public class GTSeer extends GTBasePlayer {
 				state = new GTState(Species.HUMAN, !susWolves.isEmpty(), false, isCameout, earlyDays);
 			else
 				state = new GTState(divination.getResult(), !susWolves.isEmpty(), true, isCameout, earlyDays);
-			// LearningAgent.playEpisode(state);
 			action = qLearn.playAndGetAction(state, gamenum);
 			String say;
 			switch (action) {
@@ -193,56 +184,6 @@ public class GTSeer extends GTBasePlayer {
 			talkedToday = true;
 			return say;
 		}
-
-//		for (int i = 0; i < numAgents; i++) {
-////			System.out.print(sh.rp.getProb(i, Util.WEREWOLF) + " ");
-//		}
-//		System.out.println();
-//		c = chooseMostLikelyWerewolf();
-//		if (getAliveAgentsCount() <= 3) {
-//			if (!pos) {
-//				pos = true;
-//				double all = 0;
-//				double alive = 0;
-//				for (int i = 0; i < numAgents; i++) {
-//					all += sh.rp.getProb(i, Util.POSSESSED);
-//					if (sh.gamestate.agents[i].Alive) {
-//						alive += sh.rp.getProb(i, Util.POSSESSED);
-//					}
-//				}
-//				if (alive > 0.5 * all) {
-//					doCO = true;
-//					houkoku = true;
-//					return (new Content(new ComingoutContentBuilder(me, Role.WEREWOLF))).getText();
-//				}
-//			}
-//		}
-//
-//		if (!doCO) {
-//			doCO = true;
-//			return (new Content(new ComingoutContentBuilder(me, Role.SEER))).getText();
-//
-//		}
-//		if (!houkoku) {
-//			houkoku = true;
-//
-//			if (numAgents == 5 && day == 1) {
-//				return (new Content(
-//						new DivinedResultContentBuilder(currentGameInfo.getAgentList().get(c), Species.WEREWOLF)))
-//								.getText();
-//			} else {
-//				return (new Content(new DivinedResultContentBuilder(divination.getTarget(), divination.getResult())))
-//						.getText();
-//			}
-//		}
-		// if (before != c) {
-//		if (true) {
-//			voteCandidate = currentGameInfo.getAgentList().get(c);
-//			before = c;
-//			return (new Content(new VoteContentBuilder(voteCandidate))).getText();
-//		}
-//		before = c;
-//		return Talk.SKIP;
 	}
 
 	public Agent divine() {
@@ -263,25 +204,6 @@ public class GTSeer extends GTBasePlayer {
 			return randomSelect(grayList);
 		else
 			return randomSelect(alives);
-//		double mn = -1;
-//		int c = -1;
-//	
-//		for(int i=0;i<numAgents;i++){
-//			if(i!=meint){
-//				if(sh.gamestate.agents[i].Alive){
-//					if(!divined[i]){
-//						double score = sh.rp.getProb(i, Util.WEREWOLF);
-//						if(mn < score){
-//							mn = score;
-//							c = i;
-//						}
-//					}
-//				}
-//			}
-//		}
-//
-//		if (c == -1) return null;
-//		return currentGameInfo.getAgentList().get(c);
 	}
 
 	public void getReward() {
@@ -313,7 +235,6 @@ public class GTSeer extends GTBasePlayer {
 		Boolean divined = divination != null;
 		Boolean earlyDays = currentGameInfo.getDay() < 3;
 		state = new GTState(divType, !susWolves.isEmpty(), divined, isCameout, earlyDays);
-		// action = Talk.SKIP;
 		qLearn.updateQTable(state, action, reward); // state, action, reward
 	}
 
