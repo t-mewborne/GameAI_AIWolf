@@ -1,1 +1,0 @@
-# ai-wolf-GT
